@@ -1,11 +1,14 @@
-export function simpleProblemExtractor(text:string) {
-  // extremely small deterministic NLP: split by comma/and and return capitalized first tokens
-  if (!text || typeof text !== "string") return [];
-  const tokens = text.split(/\band\b|,|;/i).map(s=>s.trim()).filter(Boolean);
-  // pick first noun-ish token (very naive)
-  const results = tokens.map(t => {
-    const first = t.split(" ").slice(0,3).join(" ");
-    return first.charAt(0).toUpperCase() + first.slice(1);
-  });
-  return results;
-}
+CREATE TABLE IF NOT EXISTS briks (
+  id BIGSERIAL PRIMARY KEY,
+  brik_id text NOT NULL,
+  version text NOT NULL,
+  content jsonb NOT NULL,
+  created_by text,
+  created_at timestamptz default now(),
+  tags text[],
+  checksum text,
+  UNIQUE (brik_id, version)
+);
+
+CREATE INDEX ON briks USING gin(content jsonb_path_ops);
+CREATE INDEX ON briks(tags);
