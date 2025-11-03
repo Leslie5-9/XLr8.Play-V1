@@ -1,48 +1,43 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "Brik",
-  "type": "object",
-  "required": ["id","version","name","description","kind","inputs","outputs","instructions","created_by","created_at"],
-  "properties": {
-    "id": {"type":"string","pattern":"^[a-z0-9._-]+$"},
-    "version": {"type":"string","pattern":"^\\d+\\.\\d+\\.\\d+$"},
-    "name": {"type":"string"},
-    "description": {"type":"string"},
-    "kind": {"type":"string","enum":["ui","service","data","workflow"]},
-    "inputs": {
-      "type":"array",
-      "items": {
-        "type":"object",
-        "required":["name","type"],
-        "properties": {
-          "name":{"type":"string"},
-          "type":{"type":"string"},
-          "required":{"type":"boolean"},
-          "schema":{"type":"object"},
-          "uiHint":{"type":"object"}
-        }
-      }
-    },
-    "outputs": {
-      "type":"array",
-      "items": {
-        "type":"object",
-        "required":["name","type"],
-        "properties": {
-          "name":{"type":"string"},
-          "type":{"type":"string"},
-          "schema":{"type":"object"}
-        }
-      }
-    },
-    "ui":{"type":["object","null"]},
-    "logic":{"type":["object","null"]},
-    "instructions":{"type":"string"},
-    "tests":{"type":"array"},
-    "compatibility":{"type":"object"},
-    "created_by":{"type":"string"},
-    "created_at":{"type":"string","format":"date-time"},
-    "tags":{"type":"array","items":{"type":"string"}}
+  "id": "xlr8.consultation.basic",
+  "version": "1.0.0",
+  "name": "Consultation (Basic)",
+  "description": "Capture patient visit: clinician notes, diagnosis, basic vitals.",
+  "kind": "ui",
+  "inputs": [
+    {"name":"patient","type":"patient","required":true},
+    {"name":"presentingComplaint","type":"string","required":true,"uiHint":{"widget":"textarea"}}
+  ],
+  "outputs": [
+    {"name":"consultationNote","type":"document"},
+    {"name":"problemList","type":"array"}
+  ],
+  "ui": {
+    "templateRef":"templates/consultation/basic/v1",
+    "styleHints":{"color":"#0A74DA","layout":"left-sidebar"}
   },
-  "additionalProperties": true
+  "logic": {
+    "type":"compose",
+    "rule": {
+      "map":[
+        {"from":"inputs.presentingComplaint","to":"outputs.consultationNote.body"}
+      ],
+      "derive":[
+        {"from":"inputs.presentingComplaint","to":"outputs.problemList","module":"nlp:simple-problem-extractor@0.1.0"}
+      ]
+    }
+  },
+  "instructions":"Use this brik to create a clinician consultation note. Compose with triage brik to prefill vitals.",
+  "tests":[
+    {
+      "name":"simple complaint",
+      "inputFixture":{"patient":{"id":"p1"},"presentingComplaint":"Headache and nausea"},
+      "expectedOutput":{"problemList":["Headache"]},
+      "runInSandbox":true
+    }
+  ],
+  "compatibility":{"major":1,"notes":"1.x compatible"},
+  "created_by":"Leslie5-9",
+  "created_at":"2025-11-03T18:00:00Z",
+  "tags":["consultation","clinical","example"]
 }
