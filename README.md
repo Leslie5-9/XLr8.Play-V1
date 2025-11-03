@@ -1,14 +1,17 @@
-CREATE TABLE IF NOT EXISTS briks (
-  id BIGSERIAL PRIMARY KEY,
-  brik_id text NOT NULL,
-  version text NOT NULL,
-  content jsonb NOT NULL,
-  created_by text,
-  created_at timestamptz default now(),
-  tags text[],
-  checksum text,
-  UNIQUE (brik_id, version)
-);
+```markdown
+# XLr8.Play-V1
 
-CREATE INDEX ON briks USING gin(content jsonb_path_ops);
-CREATE INDEX ON briks(tags);
+Starter repository for XLr8.Play — EMR brix + AI agent compositions.
+
+This repo will host:
+- Brik contract and JSON Schema
+- A backend sandbox and validator (Node.js / Express)
+- Example briks (JSON)
+- Frontend BrikRenderer (React + TypeScript)
+
+Next steps:
+1. Add backend starter files (validator, sandbox)
+2. Add example briks
+3. Run validator locally
+4. Add CI to validate briks on push
+```
